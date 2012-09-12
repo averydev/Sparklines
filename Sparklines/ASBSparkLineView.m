@@ -91,6 +91,8 @@ static inline float yPlotValue(float maxHeight, float yInc, float val, float min
 @synthesize rangeOverlayLowerLimit=m_rangeOverlayLowerLimit, rangeOverlayUpperLimit=m_rangeOverlayUpperLimit;
 @synthesize dataMinimum=m_dataMinimum, dataMaximum=m_dataMaximum;
 @synthesize penColor=m_penColor, penWidth=m_penWidth;
+@synthesize useLogScale;
+@synthesize show;
 
 
 #pragma mark Property Accessors
@@ -344,8 +346,8 @@ static inline float yPlotValue(float maxHeight, float yInc, float val, float min
     const CGFloat sparkHeight = fullHeight - (2 * GRAPH_Y_BORDER);
 
     // defaults: upper and lower graph bounds are data maximum and minimum, respectively
-    float graphMax = dataMax;
-    float graphMin = dataMin;
+    float graphMax = (self.useLogScale)? logf(dataMax): dataMax;
+    float graphMin = (self.useLogScale)? logf(dataMin): dataMin;
     
     // disable overlay if the upper limit is at or below the lower limit
     if (self.showRangeOverlay && (self.rangeOverlayUpperLimit != nil) && (self.rangeOverlayLowerLimit != nil) &&
@@ -428,7 +430,12 @@ static inline float yPlotValue(float maxHeight, float yInc, float val, float min
 
         // warning and zero value for any non-NSNumber objects
         if ([obj isKindOfClass:[NSNumber class]]) {
-            ypos = yPlotValue(fullHeight, yInc, [obj floatValue], graphMin, self.penWidth);
+			if (useLogScale) {
+				ypos = yPlotValue(fullHeight, yInc, logf([obj floatValue]), graphMin, self.penWidth);
+
+			}else{
+				ypos = yPlotValue(fullHeight, yInc, [obj floatValue], graphMin, self.penWidth);
+			}
         } else {
             NSLog(@"non-NSNumber object (%@) found in data (index %d), zero value used", [[obj class] description], idx);
             ypos = yPlotValue(fullHeight, yInc, 0.0f, graphMin, self.penWidth);

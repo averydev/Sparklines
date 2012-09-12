@@ -145,6 +145,10 @@
 //! The float value used for the sparkline pen width
 @property (nonatomic) CGFloat penWidth;
 
+// Flag to enable logarithmic scale for the chart
+@property (nonatomic)BOOL useLogScale;
+
+@property (nonatomic)int useLogScale;
 
 /**
  \brief The lower limit of the range overlay.
